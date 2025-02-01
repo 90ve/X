@@ -1,9 +1,9 @@
 -- Load the Orion Library
-local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Xtentacion178/Dbbdbr/main/Rbsbbs"))()
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/90ve/X/refs/heads/main/Nkp67.lua"))()
 
 -- Create a window
 local Window = OrionLib:MakeWindow({
-    Name = "PIRATE HUB V0.1 BROOKHAVEN RP🏠",
+    Name = "J HUB V0.1",
     HidePremium = false,
     SaveConfig = true,
     IntroText = "PIRATE HUB",
@@ -37,8 +37,8 @@ local Section = Tab:AddSection({
 
 -- Create a tab
 local Tab = Window:MakeTab({
-    Name = "👾 - Main Troll",
-    Icon = "rbxassetid://18904410739",
+    Name = "Main Troll",
+    Icon = "rbxassetid://118979441318405",
     PremiumOnly = false
 })
 
