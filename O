@@ -1,1 +1,913 @@
-lol
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/RedzLibV5/main/Source.lua"))()
+
+local Window = Library:MakeWindow({
+    Title = "Virius Hub | Brookhaven",
+    SubTitle = "Tik : 9.0ver",
+    SaveFolder = false -- Save Configs on Player's Device
+})
+
+local Tab = Window:MakeTab({
+    Title = "المعلومات",
+    Icon = "Command" -- See lib/Icons.lua
+})
+
+local DiscordInvite = Tab:AddDiscordInvite({
+    Title = "سـيـرفـر ديـسـكـورد | Virius hub",
+    Desc = "انـضـم الـى مـجـتـمـع ديـسـكـور  الـخـاص بـنـا", -- Optional
+    Logo = "", -- Optional, Icon
+    Invite = "9.0ver" -- Discord Invite's Link
+})
+local Section = Tab:AddSection({
+    Title = "حـسـابـات الـمـطـور"
+})
+local Button = Tab:AddButton({
+    Title = "اضـغـط لـنـسـخ حـسـاب الـمـطـور عـلـي| TikTok",
+    Desc = "", -- Optional
+    Callback = function ()
+        setclipboard('9.0ver')
+end
+})
+
+local Button = Tab:AddButton({
+    Title = "اضـغـط لـنـسـخ حـسـاب الـمـطـور عـلـي | Roblox",
+    Desc = "", -- Optional
+    Callback = function ()
+        setclipboard('8ril_m')
+    end
+})
+
+local Section = Tab:AddSection({
+    Title = "مـعـلـومـات"
+})
+
+local Paragraph = Tab:AddParagraph({
+    Title = "الـمـطـور",
+    Text = "تـم تـطـويـر الـسـكـربـت مـن الـمـطـور عـلـي"
+})
+
+local Section = Tab:AddSection({
+    Title = "2025"
+})
+local Paragraph = Tab:AddParagraph({
+    Title = "مـن شـركـة [Virius]",
+    Text = "سـنـة جـديـدة وسـعـيـدة لـجـمـيع مـسـتـخـدمـي Virius Hub اتـمـنـى ان يـعـجـبـكـم الـسـكـربـت"
+})
+local Paragraph = Tab:AddParagraph({
+    Title = "انـتـبـه!",
+    Text = "يـرجـئ ابـلاغـنـا فـي حـال كـان هـنـالـك خـطـأ فـي الـسـكـربـت"
+})
+
+    
+    local Paragraph = Tab:AddParagraph({
+    Title = "المـطـور",
+    Text = "عـلـي"
+})
+local Paragraph = Tab:AddParagraph({
+    Title = "الاقـتـراحـات",
+    Text = "اذا عـنـدك/ج شـي تـريـد اضـيـفـه راسـلـني تـيـك"
+})
+
+local HH = Window:MakeTab({
+    Title = "Features | الـمـيـزات",
+    Icon = "Eye" -- See lib/Icons.lua
+})
+
+local function getPlayerNames()
+    local playerNames = {}
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        table.insert(playerNames, player.Name)
+    end
+    return playerNames
+end
+
+-- Store selected player for later use
+local selectedPlayer = nil
+local followHead = false
+local connection = nil
+
+-- Function to spectate the selected player
+local function spectatePlayer(enable)
+    local player = game.Players.LocalPlayer
+    local camera = workspace.CurrentCamera
+
+    if selectedPlayer then
+        local targetPlayer = game.Players:FindFirstChild(selectedPlayer)
+        if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            if enable then
+                -- Set camera to follow the selected player
+                camera.CameraSubject = targetPlayer.Character.Humanoid
+            else
+                -- Reset camera to default (back to the local player)
+                camera.CameraSubject = player.Character.Humanoid
+            end
+        else
+            print("Selected player not available or out of game.")
+        end
+    else
+        print("No player selected!")
+    end
+end
+
+-- Function to float just above the selected player's head without falling
+local function floatAbovePlayerHead()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local humanoidRootPart = character.HumanoidRootPart
+
+        if selectedPlayer then
+            local targetPlayer = game.Players:FindFirstChild(selectedPlayer)
+
+            if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("Head") then
+                local targetHead = targetPlayer.Character.Head
+
+                -- Position above the selected player's head
+                humanoidRootPart.CFrame = targetHead.CFrame * CFrame.new(0, 3, 0)
+
+                -- Keep updating the position every frame
+                connection = game:GetService("RunService").Heartbeat:Connect(function()
+                    if followHead and targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("Head") then
+                        -- Update to stay above the player's head
+                        humanoidRootPart.CFrame = targetPlayer.Character.Head.CFrame * CFrame.new(0, 3, 0)
+                    else
+                        connection:Disconnect() -- Disconnect if the toggle is off
+                    end
+                end)
+            else
+                print("Target player not found or not in the game.")
+            end
+        else
+            print("No player selected!")
+        end
+    end
+end
+
+-- Function to trigger the secondary script
+local function triggerCharacterSizeDown()
+    local args = {
+        [1] = "CharacterSizeDown",
+        [2] = 2.4
+    }
+    game:GetService("ReplicatedStorage").RE:FindFirstChild("1Clothe1s"):FireServer(unpack(args))
+end
+
+-- Function to teleport behind the selected player and return after 1.5 seconds
+local function moveBehindAndReturn()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+
+    if humanoidRootPart and selectedPlayer then
+        local targetPlayer = game.Players:FindFirstChild(selectedPlayer)
+        if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local targetHumanoidRootPart = targetPlayer.Character.HumanoidRootPart
+
+            -- Store the original position
+            local originalPosition = humanoidRootPart.CFrame
+
+            -- Move behind the selected player
+            humanoidRootPart.CFrame = targetHumanoidRootPart.CFrame * CFrame.new(0, 0, 3)
+
+            -- Wait for 1.5 seconds before returning
+            wait(1.5)
+
+            -- Return to original position
+            humanoidRootPart.CFrame = originalPosition
+        else
+            print("Selected player not found or not in the game.")
+        end
+    else
+        print("No player or HumanoidRootPart found!")
+    end
+end
+
+-- Create the dropdown with player names
+local Dropdown = HH:AddDropdown({
+    Name = "اختار الاعب",
+    Default = "",
+    Options = getPlayerNames(),
+    Callback = function(value)
+        selectedPlayer = value
+        print("Player selected: " .. value)
+    end    
+})
+
+-- Add a toggle that allows the player to spectate the selected player
+HH:AddToggle({
+    Name = "شوف الاعب",
+    Default = false,
+    Callback = function(value)
+        spectatePlayer(value)
+    end    
+})
+
+-- Add a second toggle to start floating above the selected player's head
+HH:AddToggle({
+    Name = "تحكم في شات الاعب",
+    Default = false,
+    Callback = function(value)
+        followHead = value
+        if followHead then
+            -- Teleport to player's head first
+            floatAbovePlayerHead()
+            -- Trigger the secondary script
+            triggerCharacterSizeDown()
+        else
+            if connection then
+                connection:Disconnect() -- Disconnect the heartbeat listener when not following
+                connection = nil
+            end
+        end
+    end    
+})
+
+-- Add a button to teleport to the selected player
+HH:AddButton({
+    Name = "روح عند الاعب",
+    Callback = function()
+        floatAbovePlayerHead()
+    end    
+})
+
+-- Add a button to move behind the selected player and return after 1.5 seconds
+HH:AddButton({
+    Name = "اسحب الاعب",
+    Callback = function()
+        moveBehindAndReturn()
+    end    
+})
+
+local Section = HH:AddSection({
+    Title = "مـيـزات الاعـب"
+})
+
+local function getRandomColor()
+    return Color3.new(math.random(), math.random(), math.random());
+end
+local ReplicatedStorage = game:GetService("ReplicatedStorage");
+local RemoteEvent = ReplicatedStorage.RE:FindFirstChild(
+                        "1RPNam1eColo1r");
+local nameColorRunning = false;
+local bioColorRunning = false;
+local function changeNameColor()
+    while nameColorRunning do
+        local randomColor = getRandomColor();
+        local args = {[1] = "PickingRPNameColor", [2] = randomColor};
+        RemoteEvent:FireServer(unpack(args));
+        wait(0.5);
+    end
+end
+local function changeBioColor()
+    while bioColorRunning do
+        local randomColor = getRandomColor();
+        local args = {[1] = "PickingRPBioColor", [2] = randomColor};
+        RemoteEvent:FireServer(unpack(args));
+        wait(0.5);
+    end
+end
+local nameColorToggle;
+nameColorToggle = HH:AddToggle({
+    Name = "تـلـويـن الاسـم",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            if not nameColorRunning then
+                nameColorRunning = true;
+                spawn(changeNameColor);
+            end
+        else
+            nameColorRunning = false;
+        end
+    end
+});
+local bioColorToggle;
+bioColorToggle = HH:AddToggle({
+    Name = "تـلـويـن الـعـنـوان",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            if not bioColorRunning then
+                bioColorRunning = true;
+                spawn(changeBioColor);
+            end
+        else
+            bioColorRunning = false;
+        end
+    end
+});
+
+local Section = HH:AddSection({
+    Title = "خـصـائـص الاعـب"
+})
+
+local gravityValue = 196.2;
+local TextBox = HH:AddTextBox({
+    Name = "الـجـاذبـيـة",
+    Default = "196.2",
+    Desc = "افـضـل خـيـار لـجـاذبـيـة | 20", 
+    PlaceholderText = "196.2",
+    ClearText = false,
+    Callback = function(value)
+        local number = tonumber(value);
+        if number then
+            gravityValue = number;
+            game.Workspace.Gravity = gravityValue;
+        end
+    end
+})
+
+
+
+local speedValue = 16;
+local TextBox = HH:AddTextBox({
+    Name = "الـسـرعـة",
+    Default = "16",
+    Desc = "فـضـل خـيـار لـسـرعـة | 160", 
+    PlaceholderText = "16",
+    ClearText = false,
+    Callback = function(value)
+        local number = tonumber(value);
+        if number then
+            speedValue = number;
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed =
+                speedValue;
+        end
+    end
+})
+
+local jumpPower = 50;
+local TextBox = HH:AddTextBox({
+    Name = "الـقـفـز",
+    Default = "50",
+    Desc = "فـضـل خـيـار لـلـقـفـز | ???", 
+    PlaceholderText = "50",
+    ClearText = false,
+    Callback = function(value)
+        local number = tonumber(value);
+        if number then
+            jumpPower = number;
+            game.Players.LocalPlayer.Character.Humanoid.JumpPower =
+                jumpPower;
+        end
+    end
+})
+
+HH:AddButton({
+    Name = "اعـادة الـسـرعة والـجاذبيه والـقفز لـطبيعتها [ريـسـيـت]",
+    Callback = function()
+        jumpPower = 50;
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower =
+            jumpPower;
+        speedValue = 16;
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed =
+            speedValue;
+        gravityValue = 196.2;
+        game.Workspace.Gravity = gravityValue;
+    end
+});
+
+local Tab = Window:MakeTab({
+    Title = "Kill | الـقـتـل",
+    Icon = "rbxassetid://5873794859" -- See lib/Icons.lua
+})
+
+
+local Tab = Window:MakeTab({
+    Title = "House | الـبـيـوت",
+    Icon = "rbxassetid://18786871535" -- See lib/Icons.lua
+})
+local Tab = Window:MakeTab({
+    Title = "Car | سـيـارت",
+    Icon = "rbxassetid://18944378972"
+})
+Tab:AddToggle({
+	Name = "سياره ملونه",
+	Default = false, -- Toggle starts off
+	Callback = function(value)
+		isActive = value -- Update toggle state
+		if isActive then
+			-- Start the loop when the toggle is activated
+			spawn(function()
+				while isActive do
+					-- Generate random car color
+					local args = {
+						[1] = "PickingCarColor",
+						[2] = Color3.new(math.random(), math.random(), math.random()) -- Random color
+					}
+					
+					-- Fire the remote event
+					game:GetService("ReplicatedStorage").RE:FindFirstChild("1Player1sCa1r"):FireServer(unpack(args))
+					
+					wait(1.2) -- Adjust the wait time as needed
+				end
+			end)
+		end
+	end
+})
+local isActive = false -- Toggle state
+
+Tab:AddToggle({
+	Name = " تكرار بوري السياره 1",
+	Default = false, -- Toggle starts off
+	Callback = function(value)
+		isActive = value -- Update toggle state
+		if isActive then
+			-- Start spamming the event
+			spawn(function()
+				while isActive do
+					local args = {
+						[1] = "Duke1"
+					}
+					game:GetService("ReplicatedStorage"):WaitForChild("RE"):WaitForChild("1Player1sCa1r"):FireServer(unpack(args))
+					wait(0.8) -- Spam every 0.8 seconds
+				end
+			end)
+		end
+	end
+})local isActive = false -- حالة التفعيل
+
+Tab:AddToggle({
+	Name = "تشغيل الحريق تكرار",
+	Default = false, -- التفعيل الافتراضي
+	Callback = function(value)
+		isActive = value -- تحديث حالة التفعيل
+		if isActive then
+			-- تشغيل الحريق بشكل مستمر
+			spawn(function()
+				while isActive do
+					local args = {
+						[1] = "Fire"
+					}
+					game:GetService("ReplicatedStorage"):WaitForChild("RE"):WaitForChild("1Player1sCa1r"):FireServer(unpack(args))
+					wait(1) -- التحكم في مدة الانتظار بين كل عملية
+				end
+			end)
+		else
+			-- تشغيل السكربت مرة واحدة فقط عند الإطفاء
+			local args = {
+				[1] = "StopFire"
+			}
+			game:GetService("ReplicatedStorage"):WaitForChild("RE"):WaitForChild("1Player1sCa1r"):FireServer(unpack(args))
+			print("تم إطفاء الحريق.")
+		end
+	end
+})local isActive = false -- حالة التفعيل
+
+Tab:AddToggle({
+	Name = "تكرار تشغيل الدخان",
+	Default = false, -- التفعيل الافتراضي
+	Callback = function(value)
+		isActive = value -- تحديث حالة التفعيل
+		if isActive then
+			-- تشغيل الدخان بشكل مستمر
+			spawn(function()
+				while isActive do
+					local args = {
+						[1] = "Smoke"
+					}
+					game:GetService("ReplicatedStorage"):WaitForChild("RE"):WaitForChild("1Player1sCa1r"):FireServer(unpack(args))
+					wait(1) -- التحكم في مدة الانتظار بين كل عملية
+				end
+			end)
+		else
+			-- تشغيل السكربت مرة واحدة فقط عند الإطفاء
+			local args = {
+				[1] = "StopSmoke" -- اسم الحدث لإيقاف الدخان (تأكد من أنه موجود)
+			}
+			game:GetService("ReplicatedStorage"):WaitForChild("RE"):WaitForChild("1Player1sCa1r"):FireServer(unpack(args))
+			print("تم إطفاء الدخان.")
+		end
+	end
+})local isActive = false -- Toggle state
+
+Tab:AddToggle({
+	Name = "تكرار بوري 2",
+	Default = false, -- Toggle starts off
+	Callback = function(value)
+		isActive = value -- Update toggle state
+		if isActive then
+			-- Start spamming the event when toggle is activated
+			spawn(function()
+				while isActive do
+					local args = {
+						[1] = "Duke"
+					}
+					game:GetService("ReplicatedStorage"):WaitForChild("RE"):WaitForChild("1Player1sCa1r"):FireServer(unpack(args))
+					wait(0.9) -- Spam every 0.9 seconds
+				end
+			end)
+		end
+	end
+})local isActive = false -- Toggle state
+
+Tab:AddToggle({
+	Name = " تكرار تغير كفر السيارة",
+	Default = false, -- Toggle starts off
+	Callback = function(value)
+		isActive = value -- Update toggle state
+		if isActive then
+			-- Start spamming the event when toggle is activated
+			spawn(function()
+				while isActive do
+					local args = {
+						[1] = "WheelNumber"
+					}
+					game:GetService("ReplicatedStorage"):WaitForChild("RE"):WaitForChild("1Player1sCa1r"):FireServer(unpack(args))
+					wait(0.8) -- Spam every 0.8 seconds
+				end
+			end)
+		end
+	end
+})local isActive = false -- Toggle state
+
+local Tab = Window:MakeTab({
+    Title = "Avatar | اجـسـام",
+    Icon = "Edit" -- See lib/Icons.lua
+})
+local Tab = Window:MakeTab({
+    Title = "Skin | سـكـنـات",
+    Icon = "User" -- See lib/Icons.lua
+})
+
+local function getPlayerNames()
+    local playerNames = {}
+    for _, player in ipairs(game.Players:GetPlayers()) do
+        table.insert(playerNames, player.Name)
+    end
+    return playerNames
+end
+
+local selectedPlayer = nil -- اللاعب المحدد للنسخ
+
+-- دروب داون لاختيار اللاعب
+local Dropdown = Tab:AddDropdown({
+    Name = "اختار الاعب",
+    Default = "",
+    Options = getPlayerNames(),
+    Callback = function(value)
+        selectedPlayer = value
+        print("Player selected: " .. value)
+    end    
+})
+
+-- دوال نسخ السكنات
+local function RESETBLOCK()
+    local args = {
+        [1] = "CharacterChange",
+        [2] = { [1] = 0, [2] = 0, [3] = 0, [4] = 0, [5] = 0, [6] = 0 },
+        [3] = "AllBlocky"
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("RE"):WaitForChild("1Avata1rOrigina1l"):FireServer(unpack(args))
+end
+
+local function APPLY_SKINTONE(Player)
+    local p = Player
+    local c = p.Character or p.CharacterAdded:Wait()
+    local h = c:FindFirstChildOfClass("Humanoid")
+
+    if not h then
+        warn("Humanoid not found!")
+        return
+    end
+
+    local bodyColors = c:FindFirstChildOfClass("BodyColors")
+
+    if not bodyColors then
+        warn("BodyColors not found!")
+        return
+    end
+
+    local skinTone = bodyColors.HeadColor
+    local skinToneName = skinTone.Name
+
+    local args = {
+        [1] = "skintone",
+        [2] = skinToneName
+    }
+
+    game:GetService("ReplicatedStorage"):WaitForChild("RE"):WaitForChild("1Updat1eAvata1r"):FireServer(unpack(args))
+end
+
+local function Wear(id)
+    game:GetService("ReplicatedStorage").RE:FindFirstChild("1Updat1eAvata1r"):FireServer("wear", id)
+end
+
+local function COPYCLOTHING(Player)
+    local p = Player
+    local c = p.Character or p.CharacterAdded:Wait()
+    local h = c:FindFirstChildOfClass("Humanoid")
+
+    if not h then
+        warn("Humanoid not found!")
+        return
+    end
+
+    local d = h:GetAppliedDescription()
+    local cIds = { d.Shirt, d.Pants, d.GraphicTShirt }
+    local done = false
+
+    task.spawn(function()
+        for _, id in ipairs(cIds) do
+            if id ~= 0 then
+                task.wait(1)
+                Wear(id)
+            end
+        end
+        done = true
+    end)
+
+    repeat task.wait() until done
+end
+
+local function COPYBODYPART(Player)
+    local p = Player
+    local c = p.Character or p.CharacterAdded:Wait()
+    local h = c:FindFirstChildOfClass("Humanoid")
+
+if not h then
+        warn("Humanoid not found!")
+        return
+    end
+
+    local d = h:GetAppliedDescription()
+
+    local bIds = {
+        d.Torso,
+        d.RightArm,
+        d.LeftArm,
+        d.RightLeg,
+        d.LeftLeg,
+        d.Head
+    }
+local done = false
+    task.spawn(function()
+        game:GetService("ReplicatedStorage").RE:FindFirstChild("1Avata1rOrigina1l"):FireServer(
+            "CharacterChange",
+            bIds,
+            "Virius Hub"
+            )
+        done = true
+    end)
+
+    repeat task.wait() until done
+end
+
+local function COPYACCESSORIES(Player)
+    local p = Player
+    local c = p.Character or p.CharacterAdded:Wait()
+    local h = c:FindFirstChildOfClass("Humanoid")
+
+    if not h then
+        warn("Humanoid not found!")
+        return
+    end
+    
+    local d = h:GetAppliedDescription()
+    local aIds = {}
+
+    for _, aList in ipairs({
+        d.HatAccessory,
+        d.HairAccessory,
+        d.FaceAccessory,
+        d.NeckAccessory,
+        d.ShouldersAccessory,
+        d.FrontAccessory,
+        d.BackAccessory,
+        d.WaistAccessory
+    }) do
+        for id in string.gmatch(aList, "%d+") do
+            table.insert(aIds, tonumber(id))
+        end
+    end
+
+    local done = false
+    task.spawn(function()
+        for _, id in ipairs(aIds) do
+            task.wait(1)
+            Wear(id)
+        end
+        done = true
+    end)
+
+    repeat task.wait() until done
+end
+
+local function START(targetPlayer)
+    if targetPlayer then
+        local player = game.Players:FindFirstChild(targetPlayer)
+        if player then
+            COPYACCESSORIES(game.Players.LocalPlayer)
+            COPYACCESSORIES(player)
+            wait(1)
+            RESETBLOCK()
+            wait(3)
+            COPYBODYPART(player)
+            COPYCLOTHING(player)
+            APPLY_SKINTONE(player)
+        else
+            print("اللاعب غير موجود!")
+        end
+    else
+        print("يرجى اختيار لاعب!")
+    end
+end
+
+-- زر نسخ السكن
+Tab:AddButton({
+    Name = "نسخ سكن الاعب",
+    Callback = function()
+        START(selectedPlayer)
+    end    
+})
+
+local Tab = Window:MakeTab({
+    Title = "Walks | مـشـيـات",
+    Icon = "Game" -- See lib/Icons.lua
+})
+local Section = Tab:AddSection({
+    Title = "بالتحديث الجاي حضيف مشيات"
+})
+local Tab = Window:MakeTab({
+    Title = "Teleporte | الانـتـقـال",
+    Icon = "Electric" -- See lib/Icons.lua
+})
+
+local Dropdown = Tab:AddDropdown({
+    Title = "اختيار لاعب",
+    Desc = "", -- Optional
+    Options = {"One", "Two", "Three"},
+    Callback = function (Value)
+        print("Dropdown Item Select", Value)
+    end,
+})
+
+local Button = Tab:AddButton({
+    Title = "انـتـقـل للاعـب",
+    Desc = "",
+    Callback = function ()
+        print("Button Clicked")
+    end
+})
+
+local Toggle = Tab:AddToggle({
+    Title = "تتبع الاعب تلقائي",
+    Desc = "",
+    Callback = function (Value)
+        print("Toggle State Change", Value)
+    end,
+    Default = false, -- Default State
+    Flag = false
+})
+local Section = Tab:AddSection({
+    Title = "التـنـقـل"
+})
+local Button = Tab:AddButton({
+    Title = "حـفـض احـداثـيـاتـك",
+    Desc = "",
+    Callback = function ()
+        print("Button Clicked")
+    end
+})
+local Button = Tab:AddButton({
+    Title = "الـتـنـقـل لاحـداثـيـاتـك الـمـحـفـوضـة",
+    Desc = "",
+    Callback = function ()
+        print("Button Clicked")
+    end
+})
+
+local Section = Tab:AddSection({
+    Title = "الـتـنـقـلات لـلـمـنـاطـق"
+})
+
+Tab:AddButton({
+    Name = "الـبـدايـة",
+    Description = "Teleport to House Abandoned coordinates",
+    Callback = function()
+        teleportToHouseAbandoned()
+    end
+})
+
+-- Teleport to Portal Agency Button Function
+local function teleportToHospital()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 0, 0)
+end
+
+Tab:AddButton({
+    Name = "الـمـسـتـشـفـى",
+    Description = "Teleport to Portal Agency coordinates",
+    Callback = function()
+        teleportToPortalAgency()
+    end
+})
+
+-- Teleport to Secret Location Button Function
+local function teleportToSecretLocation()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(505, -75, 143)
+end
+
+local function teleportToAirport()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(310, 5, 31)
+end
+
+Tab:AddButton({
+    Name = "الـمـدرسـة",
+    Description = "Teleporta para as coordenadas da Escola",
+    Callback = function()
+        teleportToSchool()
+    end
+})
+
+-- Teleport to Brooks Diner Button Function
+local function teleportToBrooksDiner()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(161, 8, 52)
+end
+
+Tab:AddButton({
+    Name = "الـمـطـعـم",
+    Description = "Teleporta para as coordenadas do Brooks Diner",
+    Callback = function()
+        teleportToBrooksDiner()
+    end
+})
+
+-- Teleport to Hospital Button Function
+local function teleportToHospital()
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-309, 4, 71)
+end
+
+local SS = Window:MakeTab({
+    Title = "Scripts | سـكـربـتـات",
+    Icon = "File" -- See lib/Icons.lua
+})
+
+SS:AddButton({
+    Name = "InfiniteYield | انـفـنـتـي",
+    Callback = function()
+      loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+    end    
+})
+
+SS:AddButton({
+  Name = "TP Tool | تـنـقـل",
+  Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/err0r129/KptHadesBlair/main/Bao.lua"))()
+       end
+})
+
+SS:AddButton({
+    Name = "Fly Gui | طـيـران",
+    Callback = function()
+      loadstring(game:HttpGet("https://scriptblox.com/raw/Universal-Script-Fly-v3-7412"))()
+    end    
+})
+
+SS:AddButton({
+    Name = "Nameless Admin | ادمـن",
+    Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/FilteringEnabled/NamelessAdmin/main/Source"))()
+    end    
+})
+
+SS:AddButton({
+    Name = "Telekinesis | تـحـكـم بـالـسـيـاره",
+    Callback = function()
+      loadstring(game:HttpGet(('https://raw.githubusercontent.com/SAZXHUB/Control-update/main/README.md'),true))()
+    end    
+})
+
+SS:AddButton({
+  Name = "Redz Hub | لايعمل",
+  Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/REDzHUB/REDzHUB/main/REDzHUB"))() 
+  end
+})
+
+SS:AddButton({
+  Name = " Ice Hub | لا يعمل",
+  Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/JulHubz/JulHub/main/JulHub"))()
+  end
+})
+
+SS:AddButton({
+  Name = "سـكـربـت يـقـتـل الـنـاس ب كـنـبـه ",
+  Callback = function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/0Ben1/fe./main/Fling%20GUI"))()
+  end
+})
+
+SS:AddButton({
+  Name = "سكربـت يطير اي احد يفعل علـيك",
+  Callback = function()
+loadstring(game:HttpGet("https://scriptblox.com/raw/Universal-Script-FE-Fling-GUI-10927"))()
+  end
+})
+
+SS:AddButton({
+  Name = "سكربـت محد يقدر يطيركـك ",
+  Callback = function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/zephyr10101/ignore-touchinterests/main/main",true))() 
+  end
+})
